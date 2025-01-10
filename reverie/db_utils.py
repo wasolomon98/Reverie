@@ -10,7 +10,7 @@ connection_pool = SimpleConnectionPool(
     user = "reverie_user",
     password = "dreamNoLonger00",
     host = "localhost",
-    post = "5432"
+    port = "5432"
 )
 
 def get_connection():
