@@ -1,6 +1,38 @@
 import psycopg2
+from psycopg2.pool import SimpleConnectionPool
 from psycopg2.extras import Json
 from datetime import datetime, timezone
+
+connection_pool = SimpleConnectionPool(
+    minconn = 1,
+    maxconn = 10,
+    dbname = "reverie_memory",
+    user = "reverie_user",
+    password = "dreamNoLonger00",
+    host = "localhost",
+    post = "5432"
+)
+
+def get_connection():
+    try:
+        return connection_pool.getconn()
+    except Exception as e:
+        print(f"Error retrieving connection: {e}")
+        raise
+
+def release_connection(connection):
+    try:
+        connection_pool.putconn(connection)
+    except Exception as e:
+        print(f"Error releasing connection: {e}")
+        raise
+
+def close_connection_pool():
+    try:
+        connection_pool.closeall()
+    except Exception as e:
+        print(f"Error closing connection pool: {e}")
+        raise
 
 def generate_conversation_data():
     return {
@@ -37,24 +69,19 @@ def insert_into_table(table_name: str, data: dict):
         table_name (str): The name of the table.
         data (dict): A dictionary of column names and their values.
     """
+
     # Construct column names and placeholders for SQL
     columns = ", ".join(data.keys())
     placeholders = ", ".join([f"%({key})s" for key in data.keys()])
 
+    # Insertion query
     query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
 
     try:
         # Connect to the database
-        connection = psycopg2.connect(
-            dbname="reverie_memory",
-            user="reverie_user",
-            password="dreamNoLonger00",
-            host="localhost",  # Update with your host
-            port="5432"  # Update with your port if necessary
-        )
-        with connection:
-            with connection.cursor() as cursor:
-                cursor.execute(query, {k: (Json(v) if isinstance(v, dict) else v) for k, v in data.items()})
+        connection = get_connection()
+        with connection.cursor() as cursor:
+            cursor.execute(query, {k: (Json(v) if isinstance(v, dict) else v) for k, v in data.items()})
     except psycopg2.Error as e:
         print(f"Database error: {e}")
     finally:
@@ -63,14 +90,11 @@ def insert_into_table(table_name: str, data: dict):
 
 def get_latest_conversation_id():
     try:
-        connection = psycopg2.connect(
-            dbname="reverie_memory", user="reverie_user", password="dreamNoLonger00", host="localhost", port="5432"
-        ) 
-        with connection:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT conversation_id FROM Conversations ORDER BY start_time DESC LIMIT 1;")
-                result = cursor.fetchone()
-                return result[0] if result else None
+        connection = get_connection()
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT conversation_id FROM Conversations ORDER BY start_time DESC LIMIT 1;")
+            result = cursor.fetchone()
+            return result[0] if result else None
     except psycopg2.Error as e:
         print(f"Database error: {e}")
         return None

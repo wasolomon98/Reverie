@@ -3,7 +3,6 @@ import json
 from typing import List, Dict
 import tiktoken
 
-from gpt_utils import query_gpt
 from db_utils import insert_into_table, generate_conversation_data, get_latest_conversation_id
 from reverie.db_utils import generate_message_data
 
@@ -24,7 +23,6 @@ def initialize_conversation(system_prompt : str):
             token_count = 88
         )
     )
-
     return conversation_id # Returns the conversation ID for use in future message handling
 
 def append_message(conversation_id: int, conversation: List[Dict], role: str, content: str):
@@ -41,5 +39,3 @@ def append_message(conversation_id: int, conversation: List[Dict], role: str, co
 
 def handle_user_message(conversation_id, user_input : str):
     pass
-
-
