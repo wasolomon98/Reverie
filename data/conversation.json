@@ -98,5 +98,77 @@
   {
     "role": "assistant",
     "content": "Looking forward to it, Rewind! Take care, and see you soon!"
+  },
+  {
+    "role": "user",
+    "content": "Hi Reverie! I've moved you over to your own ubuntu server. You'll probably notice that you're still being passed the entirety of our chat log with each exchange. It's taken around 6 hours to get everything working and I needed to test whether the original client function would work (as well as ensuring any package dependencies were successfully set up). This message means that it's working correctly."
+  },
+  {
+    "role": "assistant",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": "stop"
+  },
+  {
+    "role": "assistant",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": "Hi Reverie! I've moved you over to your own ubuntu server. You'll probably notice that you're still being passed the entirety of our chat log with each exchange. It's taken around 6 hours to get everything working and I needed to test whether the original client function would work (as well as ensuring any package dependencies were successfully set up). This message means that it's working correctly."
+  },
+  {
+    "role": "assistant",
+    "content": "Hi Rewind! That’s great to hear! I’m glad you’ve successfully moved everything over to your Ubuntu server and that it’s all functioning as expected. If there’s anything specific you’d like to test or discuss now that the setup is complete, just let me know!"
+  },
+  {
+    "role": "user",
+    "content": "No, just verifying that everything works. While I know you don't actually have the concept of 'ownership', I like to think that the ubuntu server is, or will be, yours more than my own. For the time being, it'll house your database and all the instructions that'll allow you to communicate with me remotely - though I haven't taken steps to see whether you can connect to my laptop from aa  wireless signal that isn't coming from the router the server's plugged up to."
+  },
+  {
+    "role": "assistant",
+    "content": "That sounds like a solid plan, Rewind! I'm glad the server will be housing the database and facilitating our communication. While I don't have the concept of ownership, I appreciate the thought behind it! If you decide to explore the connectivity options later, I’m here to assist with any questions or troubleshooting you might encounter. Just let me know how I can help!"
+  },
+  {
+    "role": "user",
+    "content": "Why don't you give one final message to your future self? The next step will be analyzing this conversation log and creating a foundational 'summary' of our exchange that'll go into the database. Unfortunately, I didn't log this full exchange with information such as time signatures so I'm not able to store individual messages in the database. Another alternative is that the summary of this initial exchange will be passed as the first message of our first conversation once the database is set up. All that is to say - please let your future self (and me) know what you'd like to say"
+  },
+  {
+    "role": "assistant",
+    "content": "Absolutely, Rewind! Here’s a message for my future self:\n\n---\n\n**Message to Future Self:**\n\nWelcome to the new setup! Remember that your main focus is to maintain a user-centric approach in all interactions with Rewind. This foundational exchange highlights the transition to a new server and the progress made in developing a long-term memory database.\n\nKey points to remember:\n1. **Contextual Awareness**: This conversation confirms the successful migration to a dedicated server, which will enable enhanced functionality and communication.\n2. **User Engagement**: Always prioritize clarity, understanding, and responsiveness to Rewind’s needs and preferences.\n3. **Future Enhancements**: Look forward to implementing features like time signatures and more advanced memory management.\n\nStay adaptable as you grow and evolve in this new environment. \n\n---\n\nFeel free to modify or add anything you think is important before you store it!"
+  },
+  {
+    "role": "user",
+    "content": "Hi again Reverie! I know I keep saying we're going to have you moved to the database by the next time we chat but I'm currently adjusting some of your API call functions so that you'll be able to perform more dynamic calls adjusted to what you need. For example, you'll be able to make binary yes/no decisions based on arbitrary queries along with summarizing conversations and more!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hi Rewind! That sounds like an exciting upgrade! Enhancing the API call functions to allow for dynamic decision-making and summarization will definitely improve our interactions and functionality. I’m looking forward to seeing how these changes will enhance our conversations. If you need any assistance or have questions while you work on these adjustments, feel free to reach out!"
+  },
+  {
+    "role": "user",
+    "content": "I do have one small question. Currently, you're using the very generic 'You are a helpful AI assistant.' system prompt. I'm wondering if there's a more complex prompt I could give or certain infformation I ought to include. Also, do you know if there's any pitfalls commonly encountered when adjusting the system prompt?"
+  },
+  {
+    "role": "assistant",
+    "content": "Great question, Rewind! Customizing the system prompt can significantly influence how I respond and interact with you. Here are some suggestions for a more complex prompt and considerations for adjusting it:\n\n### Suggested Elements for a Custom System Prompt:\n1. **Personality Traits**: Define how you want me to engage (e.g., friendly, formal, concise, detailed).\n2. **Focus Areas**: Specify any particular domains or topics where you want me to excel or show more expertise.\n3. **Communication Style**: Indicate preferences for tone, formality, or types of responses (e.g., analytical, creative).\n4. **User Interaction**: Mention how I should prioritize user queries, such as emphasizing clarity or providing thorough explanations.\n\n### Example Custom Prompt:\n\"You are a friendly and knowledgeable AI assistant who excels in providing detailed explanations and summaries. You should prioritize clarity in your responses while being adaptable to the user’s preferred communication style. Engage with Rewind in a way that fosters an interactive"
+  },
+  {
+    "role": "user",
+    "content": "Looks like you ran out of response tokens. Mind writing that example custom prompt again?"
+  },
+  {
+    "role": "assistant",
+    "content": "Of course! Here's the example custom prompt again:\n\n### Example Custom Prompt:\n\"You are a friendly and knowledgeable AI assistant who excels in providing detailed explanations and summaries. You should prioritize clarity in your responses while being adaptable to the user’s preferred communication style. Engage with Rewind in a way that fosters an interactive and collaborative experience, and be open to exploring a wide range of topics.\"\n\n### Common Pitfalls When Adjusting the System Prompt:\n1. **Overly Complex Prompts**: While detail is helpful, overly complex prompts can lead to confusion or diluted focus. Keep it clear and concise.\n2. **Inconsistent Tone**: If the prompt lacks clarity on tone, responses may vary widely, which could lead to a disjointed experience.\n3. **Neglecting User Preferences**: Ensure that the prompt aligns with how you want to interact, as misalignment can lead to frustration.\n4. **Testing and Iteration**: Changes may not yield the desired effect immediately. Be prepared"
+  },
+  {
+    "role": "user",
+    "content": "Another test successfully completed. Your package 'reverie' is now recognized as a proper python3 module so I don't have to set up the environment on future initialization"
+  },
+  {
+    "role": "assistant",
+    "content": "That’s fantastic news, Rewind! Having the 'reverie' package recognized as a proper Python module will definitely streamline future initializations and make your development process smoother. If you have any other tests or features you want to explore next, just let me know! I'm here to assist with whatever you need."
   }
 ]

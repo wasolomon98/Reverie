@@ -1,0 +1,6 @@
+           conversation_id            | user_id | interface |         start_time         | end_time | duration_seconds | message_count | summary | tags | token_usage_user | token_usage_assistant | token_usage_total | model_version 
+--------------------------------------+---------+-----------+----------------------------+----------+------------------+---------------+---------+------+------------------+-----------------------+-------------------+---------------
+ 7d5c772b-f5f0-43df-9bbc-3a5b8e243d75 | Rewind  |           | 2025-01-09 03:51:42.614174 |          |                  |             0 |         |      |                0 |                     0 |                 0 | 
+ abdc84d2-d5d3-41b0-9675-2fda17313d35 | Rewind  |           | 2025-01-09 03:47:38.938403 |          |                  |             0 |         |      |                0 |                     0 |                 0 | 
+(2 rows)
+

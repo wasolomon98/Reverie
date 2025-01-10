@@ -3,65 +3,43 @@ import json
 from typing import List, Dict
 import tiktoken
 
-DEFAULT_LOGFILE = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "data",
-    "conversation.json"
-)
+from gpt_utils import query_gpt
+from db_utils import insert_into_table, generate_conversation_data, get_latest_conversation_id
+from reverie.db_utils import generate_message_data
 
-# Define file paths
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-DATA_DIR = os.path.join(BASE_DIR, "data")
-CONVERSATION_LOG = os.path.join(DATA_DIR, "conversation.json")
-SUMMARY_LOG = os.path.join(DATA_DIR, "conversation_summaries.json")
+encoding = tiktoken.encoding_for_model("gpt-4o-mini")
 
-# Tokenizer setup
-ENCODING = tiktoken.get_encoding("cl100k_base")  # Adjust based on model
+def initialize_conversation(system_prompt : str):
+    conversation_data = generate_conversation_data() # Generates the dictionary of conversation data
+    insert_into_table("Conversations", conversation_data) # Places dictionary into table
+    
+    conversation_id = get_latest_conversation_id()
 
-# Summarization threshold
-SUMMARY_THRESHOLD = 3000  # Example token threshold
+    insert_into_table(  # Place the system prompt into the Messages table under the conversation ID
+        "Messages",
+        generate_message_data(
+            conversation_id = conversation_id,
+            role = "system",
+            content = system_prompt,
+            token_count = 88
+        )
+    )
 
-def load_conversation(logfile: str = DEFAULT_LOGFILE) -> List[Dict]:
-    if not os.path.exists(logfile):
-        return [{"role": "system", "content": "You are a helpful AI assistant."}]
+    return conversation_id # Returns the conversation ID for use in future message handling
 
-    try:
-        with open(logfile, "r", encoding="utf-8") as f:
-            conversation = json.load(f)
-            if isinstance(conversation, list) and all(
-                    isinstance(msg, dict) and "role" in msg and "content" in msg for msg in conversation
-            ):
-                return conversation
-            else:
-                print("Invalid conversation format. Starting fresh.")
-                return [{"role": "system", "content": "You are a helpful AI assistant."}]
-    except Exception as e:
-        print(f"Error loading conversation log: {e}")
-        return [{"role": "system", "content": "You are a helpful AI assistant."}]
-
-
-def save_conversation(conversation: List[Dict], logfile: str = DEFAULT_LOGFILE):
-    os.makedirs(os.path.dirname(logfile), exist_ok=True)
-    try:
-        with open(logfile, "w", encoding="utf-8") as f:
-            json.dump(conversation, f, ensure_ascii=False, indent=2)
-    except Exception as e:
-        print(f"Error saving conversation log: {e}")
-
-
-def append_message(conversation: List[Dict], role: str, content: str):
-    """
-    Appends a new message to the conversation list in-memory.
-    Then you can call save_conversation() to persist.
-    """
+def append_message(conversation_id: int, conversation: List[Dict], role: str, content: str):
+    insert_into_table(
+        "Messages",
+        generate_message_data(
+            conversation_id=conversation_id,
+            role=role,
+            content=content,
+            token_count=len(encoding.encode(content))
+        )
+    )
     conversation.append({"role": role, "content": content})
 
-#
-# Optional: Summarize, truncate, or handle large logs here.
-# For example:
-#
-# def truncate_conversation_if_needed(conversation: List[Dict], max_length=40):
-#     if len(conversation) > max_length:
-#         # remove oldest user/assistant pairs or summarize them
-#         ...
+def handle_user_message(conversation_id, user_input : str):
+    pass
+
+
