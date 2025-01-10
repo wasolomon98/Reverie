@@ -86,7 +86,7 @@ def insert_into_table(table_name: str, data: dict):
         print(f"Database error: {e}")
     finally:
         if connection:
-            connection.close()
+            release_connection(connection)
 
 def get_latest_conversation_id():
     try:
@@ -100,4 +100,4 @@ def get_latest_conversation_id():
         return None
     finally:
         if connection:
-            connection.close()
+            release_connection(connection)
