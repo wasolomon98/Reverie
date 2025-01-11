@@ -54,3 +54,29 @@ def query_gpt_binary(query: str) -> str:
         max_tokens=20
     )
 
+def query_gpt_for_message_tags(message: str):
+    prompt_plus_message = [
+        {"role": "system", "content": "Analyze the provided message and provide relevant subject tags. Return the tags "
+                                      "as a comma-separated list. If there are no relevant subjects return an empty string."},
+        {"role": "user", "content": message}
+    ]
+
+    tagged_message = {}
+
+    tags = query_gpt(
+        prompt_plus_message,
+        model="gpt-40-mini",
+        temperature=0.3,
+        max_tokens=50
+    )['choices'][0]['text'].strip()
+    tag_list = [tag.strip() for tag in tags.split(',')]
+
+    tagged_message = {
+        "content": message,
+        "tags": tag_list
+    }
+
+    return tagged_message
+
+
+

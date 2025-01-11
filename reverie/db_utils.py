@@ -88,6 +88,33 @@ def insert_into_table(table_name: str, data: dict):
         if connection:
             release_connection(connection)
 
+def update_table_column_by_id(table_name: str, column_name: str, id_column: str, record_id: str, value):
+    query = f"UPDATE {table_name} SET {column_name} = %s WHERE {id_column} = %s"
+    try:
+        connection = get_connection()
+        with connection.cursor() as cursor:
+            cursor.execute(query, (value, record_id))
+            connection.commit()
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
+    finally:
+        if connection:
+            release_connection(connection)
+
+def get_first_conversation_id():
+    try:
+        connection = get_connection()
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT conversation_id FROM Conversations ORDER BY start_time ASC LIMIT 1;")
+            result = cursor.fetchone()
+            return result[0] if result else None
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
+        return None
+    finally:
+        if connection:
+            release_connection(connection)
+
 def get_latest_conversation_id():
     try:
         connection = get_connection()
@@ -98,6 +125,35 @@ def get_latest_conversation_id():
     except psycopg2.Error as e:
         print(f"Database error: {e}")
         return None
+    finally:
+        if connection:
+            release_connection(connection)
+
+def get_untagged_conversation_ids():
+    try:
+        connection = get_connection()
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT conversation_id FROM Conversations WHERE tags IS NULL ORDER BY start_time ASC;")
+            results = cursor.fetchall()
+            return [row[0] for row in results]
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
+        return []
+    finally:
+        if connection:
+            release_connection(connection)
+
+def get_all_messages_in_conversation(conversation_id: str):
+    try:
+        connection = get_connection()
+        with connection.cursor() as cursor:
+            query = "SELECT message_id, content FROM Messages WHERE conversation_id = %s ORDER BY timestamp ASC;"
+            cursor.execute(query, (conversation_id,))
+            results = cursor.fetchall()
+            return {row[0]: row[1] for row in results}
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
+        return {}
     finally:
         if connection:
             release_connection(connection)
