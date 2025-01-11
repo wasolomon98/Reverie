@@ -65,7 +65,7 @@ def query_gpt_for_message_tags(message: str):
 
     tags = query_gpt(
         prompt_plus_message,
-        model="gpt-40-mini",
+        model="gpt-4o-mini",
         temperature=0.3,
         max_tokens=50
     )['choices'][0]['text'].strip()
