@@ -2,7 +2,7 @@ import json
 import atexit
 from db_utils import close_connection_pool
 import gpt_utils
-from reverie.db_utils import get_untagged_conversation_ids, get_all_messages_in_conversation, update_table_column_by_id
+from reverie.db_utils import get_untagged_conversation_ids, get_all_untagged_messages_in_conversation, update_table_column_by_id
 from reverie.gpt_utils import query_gpt_for_message_tags
 
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     untagged_conversation_ids = get_untagged_conversation_ids()
 
     for conversation_id in untagged_conversation_ids:
-        messages = get_all_messages_in_conversation(conversation_id)
+        messages = get_all_untagged_messages_in_conversation(conversation_id)
         tagged_messages = generate_subject_tags(messages)
         for message_id, data in tagged_messages.items():
             update_table_column_by_id(
@@ -43,5 +43,3 @@ if __name__ == "__main__":
                 record_id=message_id,
                 value=tags_to_json(data["tags"])
             )
-
-    atexit.register(close_connection_pool())
