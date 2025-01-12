@@ -1,3 +1,5 @@
+import json
+
 import db_utils
 import gpt_utils
 from reverie.db_utils import get_untagged_conversation_ids, get_all_messages_in_conversation, update_table_column_by_id
@@ -20,6 +22,13 @@ def generate_subject_tags(messages: dict):
 
     return tagged_messages
 
+def tags_to_json(tags: list):
+    try:
+        return json.dumps(tags)
+    except Exception as e:
+        print(f"Error converting tags to Json: {e}")
+        return "[]"
+
 if __name__ == "__main__":
     untagged_conversation_ids = get_untagged_conversation_ids()
 
@@ -32,5 +41,5 @@ if __name__ == "__main__":
                 column_name="tags",
                 id_column="message_id",
                 record_id=message_id,
-                value=data["tags"]
+                value=tags_to_json(data["tags"])
             )
