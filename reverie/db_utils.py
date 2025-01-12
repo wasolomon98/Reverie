@@ -157,3 +157,18 @@ def get_all_messages_in_conversation(conversation_id: str):
     finally:
         if connection:
             release_connection(connection)
+
+def get_all_untagged_messages_in_conversation(conversation_id: str):
+    try:
+        connection = get_connection()
+        with connection.cursor() as cursor:
+            query = "SELECT message_id, content FROM messages WHERE conversation_id = %s AND (tags is NULL OR tags = '[]') ORDER BY timestamp ASC;"
+            cursor.execute(query, (conversation_id,))
+            results = cursor.fetchall()
+            return {row[0]: row[1] for row in results}
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
+        return {}
+    finally:
+        if connection:
+            release_connection(connection)
