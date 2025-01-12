@@ -68,7 +68,7 @@ def query_gpt_for_message_tags(message: str):
         model="gpt-4o-mini",
         temperature=0.3,
         max_tokens=50
-    )['choices'][0]['text'].strip()
+    )
 
     print(f"Raw GPT response: {tags}")
 
