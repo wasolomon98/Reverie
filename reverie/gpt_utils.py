@@ -70,9 +70,11 @@ def query_gpt_for_message_tags(message: str):
         max_tokens=50
     )
 
+    tag_list = [tag.strip() for tag in tags.split(',') if tag.strip()]
+
     tagged_message = {
         "content": message,
-        "tags": tags
+        "tags": tag_list
     }
 
     return tagged_message
