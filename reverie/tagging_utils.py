@@ -8,6 +8,7 @@ def generate_subject_tags(messages: dict):
     tagged_messages = {}
     for message_id, content in messages.items():
         try:
+            print(content + '\n')
             message_with_tags = query_gpt_for_message_tags(content)
         except Exception as e:
             print(f"Error generating tags for message {message_id}: {e}")
