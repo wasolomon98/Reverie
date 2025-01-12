@@ -68,15 +68,14 @@ def query_gpt_for_message_tags(message: str):
         model="gpt-4o-mini",
         temperature=0.3,
         max_tokens=50
-    ) # ['choices'][0]['text'].strip()
-    # tag_list = [tag.strip() for tag in tags.split(',')]
+    )['choices'][0]['text'].strip()
 
     print(f"Raw GPT response: {tags}")
 
-    # tagged_message = {
-    #    "content": message,
-    #    "tags": tag_list
-    # }
+    tagged_message = {
+        "content": message,
+        "tags": tags
+    }
 
     return tagged_message
 
