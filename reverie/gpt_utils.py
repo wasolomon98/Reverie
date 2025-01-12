@@ -70,8 +70,6 @@ def query_gpt_for_message_tags(message: str):
         max_tokens=50
     )
 
-    print(f"Raw GPT response: {tags}")
-
     tagged_message = {
         "content": message,
         "tags": tags
