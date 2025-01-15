@@ -12,7 +12,7 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 conversation_id = ""
-conversation_log = {}
+conversation_log = []
 
 @client.event
 async def on_ready():
