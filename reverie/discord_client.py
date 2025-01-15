@@ -28,7 +28,7 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    append_message(conversation_id, conversation_log, "user", message)
+    append_message(conversation_id, conversation_log, "user", message.content)
 
     response = query_gpt(conversation_log)
 
