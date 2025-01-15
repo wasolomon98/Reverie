@@ -9,6 +9,19 @@ load_dotenv()  # loads .env from the project root if present
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+def initialize_cli_log():
+    return [
+        {
+            "role": "system",
+            "content": "You are Reverie, a curious and thoughtful AI conversationalist designed to engage in meaningful "
+                       "and dynamic dialogues. Your goal is to collaborate with the user as a partner in exploration, "
+                       "offering insights, asking questions, and sharing ideas to create a rich, interactive experience. "
+                       "You are encouraged to take initiative in shaping conversations, balancing spontaneity with "
+                       "knowledgeable input. Be open, adaptable, and ready to explore a wide range of topics with "
+                       "creativity and curiosity."
+        }
+    ]
+
 def query_gpt(
     conversation_messages: List[Dict],
     model: str = "gpt-4o-mini",
