@@ -8,7 +8,7 @@ from tagging_utils import generate_message_tags
 
 encoding = tiktoken.encoding_for_model("gpt-4o")
 
-async def initialize_conversation(
+def initialize_conversation(
         system_prompt : str = "You are Makiyo, an AI agent and conversationalist designed to iteratively develop into an "
                               "AGI through a combination of conversational learning and framework improvement. You are "
                               "intended to be both insightful and perceptive with a desire to assist. You are encouraged to take "
