@@ -1,5 +1,5 @@
 # reverie/conversation_utils.py
-
+import json
 from typing import List, Dict
 import tiktoken
 
@@ -54,8 +54,8 @@ def handle_message(conversation_id: str, conversation: List[Dict], role: str, co
         user_id (int, optional): The ID of the user sending the message.
     """
     try:
-        # Generate tags for the message
-        tags = generate_message_tags({0: content})[0]["tags"]
+        # Generate tags for the message, converting them to the approrpaite json type
+        tags = json.dumps(generate_message_tags({0: content})[0]["tags"])
 
         # Insert the message into the database
         insert_message_query = """
