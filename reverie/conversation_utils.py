@@ -40,6 +40,15 @@ def initialize_conversation(
         print(f"Error inserting system prompt: {e}")
         return conversation_id, conversation # Returns conversation id and an incomplete prompt
 
+    fetch_messages_query = "SELET role, content FROM messages WHERE role != 'system' ORDER BY timestamp ASC"
+
+    try:
+        previous_messages = execute_query(fetch_messages_query, fetch=True)
+        conversation.extend([{"role": role, "content": content} for role, content in previous_messages])
+    except Exception as e:
+        print(f"Error fetching previous messages: {e}")
+        return conversation_id, conversation # Returns conversation id and prompt without message history
+
     return conversation_id, conversation
 
 def handle_message(conversation_id: str, conversation: List[Dict], role: str, content: str, user_id: int = None):
