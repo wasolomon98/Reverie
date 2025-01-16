@@ -1,31 +1,78 @@
+from dotenv import load_dotenv
+import os
 import psycopg2
 from psycopg2.pool import SimpleConnectionPool
 from psycopg2.extras import Json
 from datetime import datetime, timezone
+from contextlib import contextmanager
+
+load_dotenv()
+PASSWORD = os.getenv("DATABASE_PASSWORD")
 
 connection_pool = SimpleConnectionPool(
-    minconn = 1,
-    maxconn = 10,
-    dbname = "reverie_memory",
-    user = "reverie_user",
-    password = "dreamNoLonger00",
-    host = "localhost",
-    port = "5432"
+    minconn=1,
+    maxconn=10,
+    dbname="reverie_memory",
+    user="reverie_user",
+    password=PASSWORD,
+    host="localhost",
+    port="5432"
 )
 
-def get_connection():
+@contextmanager
+def get_db_connection():
+    """
+    Context manager for safely acquiring and releasing a database connection.
+    """
+    connection = None
     try:
-        return connection_pool.getconn()
-    except Exception as e:
-        print(f"Error retrieving connection: {e}")
+        connection = connection_pool.getconn()
+        yield connection
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
         raise
+    finally:
+        if connection:
+            connection_pool.putconn(connection)
 
-def release_connection(connection):
-    try:
-        connection_pool.putconn(connection)
-    except Exception as e:
-        print(f"Error releasing connection: {e}")
-        raise
+def execute_query(query, params=None, fetch=False, fetchone=False):
+    """
+    Executes a query with the given parameters.
+
+    Args:
+        query (str): SQL query to execute.
+        params (tuple or dict, optional): Query parameters.
+        fetch (bool): Whether to fetch all rows (default: False).
+        fetchone (bool): Whether to fetch a single row (default: False).
+
+    Returns:
+        list or dict: Fetched rows if fetch or fetchone is True; otherwise None.
+    """
+    with get_db_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(query, params)
+            if fetchone:
+                return cursor.fetchone()
+            elif fetch:
+                return cursor.fetchall()
+            else:
+                connection.commit()
+
+def execute_modify(query, params=None):
+    """
+    Executes a query for modifying records (INSERT, UPDATE, DELETE).
+
+    Args:
+        query (str): SQL query to execute.
+        params (tuple or dict, optional): Query parameters.
+
+    Returns:
+        None
+    """
+    with get_db_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(query, params)
+            connection.commit()
 
 def close_connection_pool():
     try:
@@ -60,128 +107,3 @@ def generate_message_data(conversation_id: str, role: str, content: str, token_c
         "sentiment_score": sentiment_score,  # Optional sentiment score
         "custom_metrics": custom_metrics,  # Optional additional metrics
     }
-
-def insert_into_table(table_name: str, data: dict):
-    """
-    Inserts data into a specified PostgreSQL table.
-
-    Parameters:
-        table_name (str): The name of the table.
-        data (dict): A dictionary of column names and their values.
-    """
-
-    # Construct column names and placeholders for SQL
-    columns = ", ".join(data.keys())
-    placeholders = ", ".join([f"%({key})s" for key in data.keys()])
-
-    # Insertion query
-    query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
-
-    try:
-        # Connect to the database
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            cursor.execute(query, {k: (Json(v) if isinstance(v, dict) else v) for k, v in data.items()})
-    except psycopg2.Error as e:
-        print(f"Database error: {e}")
-    finally:
-        if connection:
-            release_connection(connection)
-
-def update_table_column_by_id(table_name: str, column_name: str, id_column: str, record_id: str, value):
-    query = f"UPDATE {table_name} SET {column_name} = %s WHERE {id_column} = %s"
-    try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            cursor.execute(query, (value, record_id))
-            connection.commit()
-    except psycopg2.Error as e:
-        print(f"Database error: {e}")
-    finally:
-        if connection:
-            release_connection(connection)
-
-def get_first_conversation_id():
-    try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT conversation_id FROM Conversations ORDER BY start_time ASC LIMIT 1;")
-            result = cursor.fetchone()
-            return result[0] if result else None
-    except psycopg2.Error as e:
-        print(f"Database error: {e}")
-        return None
-    finally:
-        if connection:
-            release_connection(connection)
-
-def get_latest_conversation_id():
-    try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT conversation_id FROM Conversations ORDER BY start_time DESC LIMIT 1;")
-            result = cursor.fetchone()
-            return result[0] if result else None
-    except psycopg2.Error as e:
-        print(f"Database error: {e}")
-        return None
-    finally:
-        if connection:
-            release_connection(connection)
-
-def get_untagged_conversation_ids():
-    try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT conversation_id FROM Conversations WHERE tags IS NULL ORDER BY start_time ASC;")
-            results = cursor.fetchall()
-            return [row[0] for row in results]
-    except psycopg2.Error as e:
-        print(f"Database error: {e}")
-        return []
-    finally:
-        if connection:
-            release_connection(connection)
-
-def get_recent_messages(num_messages: int = 100):
-    try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT role, content FROM messages WHERE role != 'system' ORDER BY timestamp ASC LIMIT %s;", (num_messages,))
-            return [{"role": role, "content": content} for role, content in cursor.fetchall()]
-    except psycopg2.Error as e:
-        print(f"Database error: {e}")
-        return []
-    finally:
-        if connection:
-            release_connection(connection)
-
-def get_all_messages_in_conversation(conversation_id: str):
-    try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            query = "SELECT message_id, content FROM Messages WHERE conversation_id = %s ORDER BY timestamp ASC;"
-            cursor.execute(query, (conversation_id,))
-            results = cursor.fetchall()
-            return {row[0]: row[1] for row in results}
-    except psycopg2.Error as e:
-        print(f"Database error: {e}")
-        return {}
-    finally:
-        if connection:
-            release_connection(connection)
-
-def get_all_untagged_messages_in_conversation(conversation_id: str):
-    try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            query = "SELECT message_id, content FROM messages WHERE conversation_id = %s AND (tags is NULL OR tags = '[]') ORDER BY timestamp ASC;"
-            cursor.execute(query, (conversation_id,))
-            results = cursor.fetchall()
-            return {row[0]: row[1] for row in results}
-    except psycopg2.Error as e:
-        print(f"Database error: {e}")
-        return {}
-    finally:
-        if connection:
-            release_connection(connection)
