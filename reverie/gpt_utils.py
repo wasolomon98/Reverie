@@ -11,7 +11,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def query_gpt(
     conversation_messages: List[Dict],
-    model: str = "gpt-4o-mini",
+    model: str = "gpt-4o",
     temperature: float = 0.7,
     max_tokens: int = 400,
     **kwargs
