@@ -32,6 +32,7 @@ async def on_message(message):
     append_message(conversation_id, conversation_log, "user", message.content)
 
     response = query_gpt(conversation_log)
+    print(f"{response}")
 
     append_message(conversation_id, conversation_log, "assistant", response)
 
