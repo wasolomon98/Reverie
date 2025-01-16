@@ -30,7 +30,7 @@ def initialize_conversation(
 
     # Prime the query to be used to insert the prompt into the database
     insert_message_query = """
-        INSERT INTO messages (conversation_id, role, content, token_count, tags)
+        INSERT INTO messages (conversation_id, role, content, token_count)
         VALUES (%s, %s, %s, %s, %s);
     """
 
