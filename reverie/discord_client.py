@@ -41,6 +41,8 @@ async def on_message(message):
 if __name__ == "__main__":
     conversation_log = initialize_conversation_log()
     conversation_id = initialize_conversation(conversation_log)
-    conversation_log.extend(get_recent_messages())
+    recent_messages = get_recent_messages()
+    print(f"{recent_messages}")
+    conversation_log.extend(recent_messages)
 
     client.run(DISCORD_TOKEN)
