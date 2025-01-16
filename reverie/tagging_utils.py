@@ -20,7 +20,7 @@ def add_metadata_tags(message, conversation_id, user_id, timestamp):
     tags = {
         "conversation_id": conversation_id,
         "user_id": user_id,
-        "timestamp": timestamp
+        "timestamp": timestamp.isoformat()
     }
     return {"user": message['role'], "content": f"{json.dumps(tags)} {message['content']}"}
 
