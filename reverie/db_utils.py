@@ -47,6 +47,7 @@ def execute_query(query, params=None, fetch=False, fetchone=False):
     Returns:
         list or dict: Fetched rows if fetch or fetchone is True; otherwise None.
     """
+    result = None
     with get_db_connection() as connection:
         with connection.cursor() as cursor:
             cursor.execute(query, params)
@@ -55,7 +56,7 @@ def execute_query(query, params=None, fetch=False, fetchone=False):
             elif fetch:
                 result = cursor.fetchall()
             connection.commit()
-            return result
+    return result
 
 def close_connection_pool():
     try:
