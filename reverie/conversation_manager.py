@@ -1,8 +1,10 @@
+# reverie/conversation_utils.py
+
 from typing import List, Dict
 import tiktoken
 
-from db_utils import insert_into_table, generate_conversation_data, get_latest_conversation_id
-from reverie.db_utils import generate_message_data, get_recent_messages
+from db_utils import generate_conversation_data
+from reverie.db_utils import generate_message_data
 
 encoding = tiktoken.encoding_for_model("gpt-4o-mini")
 

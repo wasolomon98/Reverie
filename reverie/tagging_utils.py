@@ -1,45 +1,44 @@
+# reverie/tagging_utils.py
+
 import json
-import atexit
-from db_utils import close_connection_pool
-import gpt_utils
-import reverie.db_utils
-from reverie.gpt_utils import query_gpt_for_message_tags
+from reverie.gpt_utils import gpt_query
 
+def generate_message_tags(messages: dict):
+    """
+    Generates tags for a set of messages and formats them as JSON.
 
-def generate_subject_tags(messages: dict):
+    Args:
+        messages (dict): A dictionary of message IDs and their content.
+
+    Returns:
+        dict: A dictionary mapping message IDs to their content and generated tags.
+    """
     tagged_messages = {}
+
     for message_id, content in messages.items():
         try:
-            message_with_tags = query_gpt_for_message_tags(content)
+            # Query GPT directly for tags
+            system_prompt = "Provide relevant subject tags for the message as a JSON array."
+            response = gpt_query(
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": content}
+                ],
+                temperature=0.3,
+                max_tokens=50
+            )
+            tags = json.loads(response)  # Parse JSON output from GPT
+        except json.JSONDecodeError as e:
+            print(f"Error parsing tags for message {message_id}: {e}")
+            tags = []  # Fallback to empty tags
         except Exception as e:
             print(f"Error generating tags for message {message_id}: {e}")
-            message_with_tags = {"content": content, "tags": []}
+            tags = []  # Fallback to empty tags
 
+        # Store the content and tags in the output
         tagged_messages[message_id] = {
-            "content" : message_with_tags["content"],
-            "tags" : message_with_tags["tags"]
+            "content": content,
+            "tags": tags
         }
 
     return tagged_messages
-
-def tags_to_json(tags: list):
-    try:
-        return json.dumps(tags)
-    except Exception as e:
-        print(f"Error converting tags to Json: {e}")
-        return "[]"
-
-if __name__ == "__main__":
-    untagged_conversation_ids = get_untagged_conversation_ids()
-
-    for conversation_id in untagged_conversation_ids:
-        messages = get_all_messages_in_conversation(conversation_id)
-        tagged_messages = generate_subject_tags(messages)
-        for message_id, data in tagged_messages.items():
-            update_table_column_by_id(
-                table_name="Messages",
-                column_name="tags",
-                id_column="message_id",
-                record_id=message_id,
-                value=tags_to_json(data["tags"])
-            )
