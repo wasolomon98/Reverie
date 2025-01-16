@@ -54,7 +54,8 @@ def initialize_conversation(
         print(f"Error inserting system prompt: {e}")
         return conversation_id, conversation # Returns conversation id and an incomplete prompt
 
-    fetch_messages_query = "SELECT role, content, conversation_id, user_id, timestamp FROM messages WHERE role != 'system' ORDER BY timestamp ASC"
+    fetch_messages_query = ("SELECT role, content, conversation_id, user_id, timestamp FROM messages WHERE role != 'system' "
+                            "ORDER BY timestamp DESC LIMIT 40 AS recent_messages ORDER BY timestamp ASC")
 
     try:
         previous_messages = execute_query(fetch_messages_query, fetch=True)
