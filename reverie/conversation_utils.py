@@ -88,7 +88,7 @@ def handle_message(conversation_id: str, conversation: List[Dict], role: str, co
         insert_message_query = """
             INSERT INTO messages (conversation_id, role, content, token_count, tags, user_id)
             VALUES (%s, %s, %s, %s, %s, %s)
-            RETUNING timestamp;
+            RETURNING timestamp;
         """
         timestamp = execute_query(
             insert_message_query,
