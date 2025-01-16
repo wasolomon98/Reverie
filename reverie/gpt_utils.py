@@ -28,6 +28,9 @@ def query_gpt(
             max_tokens=max_tokens,
             **kwargs
         )
+
+        print(f"{response}")
+
         # Extract and return the assistant’s reply
         return response.choices[0].message.content
     except Exception as e:
