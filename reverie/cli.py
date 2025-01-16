@@ -1,7 +1,7 @@
 # reverie/cli.py
 
 import atexit
-from reverie.conversation_manager import initialize_conversation, append_message
+from reverie.conversation_utils import initialize_conversation, append_message
 from reverie.gpt_utils import query_gpt, query_gpt_binary
 from db_utils import close_connection_pool
 

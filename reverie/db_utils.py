@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 import os
 import psycopg2
 from psycopg2.pool import SimpleConnectionPool
-from psycopg2.extras import Json
 from datetime import datetime, timezone
 from contextlib import contextmanager
 

@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 import discord
 
-from reverie.conversation_manager import initialize_conversation_log, initialize_conversation, append_message
+from reverie.conversation_utils import initialize_conversation_log, initialize_conversation, append_message
 from reverie.db_utils import get_recent_messages
 from reverie.gpt_utils import query_gpt
 
