@@ -20,7 +20,7 @@ def generate_message_tags(messages: dict):
             # Query GPT directly for tags
             system_prompt = "Provide relevant subject tags for the message as a JSON array."
             response = query_gpt(
-                messages=[
+                conversation_messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": content}
                 ],
