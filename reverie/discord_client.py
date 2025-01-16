@@ -36,5 +36,5 @@ async def on_message(message):
     await message.channel.send(f"{response}")
 
 if __name__ == "__main__":
-    conversation_id, conversation_log = initialize_conversation()
+    (conversation_id, conversation_log) = initialize_conversation()
     client.run(DISCORD_TOKEN)
