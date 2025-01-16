@@ -148,7 +148,7 @@ def get_recent_messages(num_messages: int = 100):
         connection = get_connection()
         with connection.cursor() as cursor:
             cursor.execute("SELECT role, content FROM messages WHERE role != 'system' ORDER BY timestamp ASC LIMIT %s;", (num_messages,))
-            return cursor.fetchall()
+            return [{"role": role, "content": content} for role, content in cursor.fetchall()]
     except psycopg2.Error as e:
         print(f"Database error: {e}")
         return []
