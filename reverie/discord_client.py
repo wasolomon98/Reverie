@@ -30,6 +30,7 @@ async def on_message(message):
     handle_message(conversation_id, conversation_log, "user", message.content, 2)
 
     response = query_gpt(conversation_log)
+    print(f"{response}")
 
     handle_message(conversation_id, conversation_log, "assistant", response, 1)
 
