@@ -4,9 +4,27 @@ import json
 from reverie.gpt_utils import query_gpt
 
 
+def add_metadata_tags(message, conversation_id, user_id, timestamp):
+    """
+    Adds metadata tags to a message in JSON format.
 
+    Args:
+        message (dict): The message content.
+        conversation_id (str): ID of the conversation.
+        user_id (int): ID of the user.
+        timestamp (str): Timestamp of the message.
 
-def generate_message_tags(messages: dict):
+    Returns:
+        dict: A dictionary containing the message and its metadata tags.
+    """
+    tags = {
+        "conversation_id": conversation_id,
+        "user_id": user_id,
+        "timestamp": timestamp
+    }
+    return {"user": message['role'], "content": f"{json.dumps(tags)} {message['content']}"}
+
+def generate_content_tags(messages: dict):
     """
     Generates tags for a set of messages and formats them as JSON.
 

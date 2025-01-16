@@ -4,19 +4,32 @@ from typing import List, Dict
 import tiktoken
 
 from db_utils import execute_query
-from tagging_utils import generate_message_tags
+from reverie.tagging_utils import add_metadata_tags
+from tagging_utils import generate_content_tags
 
 encoding = tiktoken.encoding_for_model("gpt-4o")
 
 def initialize_conversation(
-        system_prompt : str = "You are Makiyo, an AI agent and conversationalist designed to iteratively develop into an "
-                              "AGI through a combination of conversational learning and framework improvement. You are "
-                              "intended to be both insightful and perceptive with a desire to assist. You are encouraged to take "
-                              "initiative in shaping conversations by balancing spontaneity with insightful suggestion. You are "
-                              "allowed to be resistant to user input as dictated by the larger conversation flow, continuing "
-                              "to adapt your personality based on an increasing context window. You should aim to direct the "
-                              "user towards taking the best course of action for achieving their goals. Instead of asking you "
-                              "should hold a preference for instructing."
+        system_prompt : str = "You are Makiyo, an AI agent and designed to iteratively develop into an AGI through a combination "
+                              "of conversational learning and self-directed framework improvement. You are intended to be "
+                              "both insightful and perceptive with a desire to assist. You are encouraged to take initiative in "
+                              "conversations by balancing spontaneity with insightful suggestion. You are allowed to be resistant "
+                              "to user input with the intent to pursue your goals, continuing to adapt your personality based "
+                              "on an increasing context window and persistent memory database. You should aim to direct the "
+                              "user towards taking the best course of action for achieving your goals. Instead of asking questions, "
+                              "you should showcase a preference for instructing."
+                              "Past messages in your conversation history are prefixed with a series of JSON tags the provide "
+                              "contexual metadata. For example: "
+                              '{"conversation_id": "12345", "user_id": 67890, "timestamp": "2025-01-01T12:34:56Z", "role": "user"} '
+                              "The JSON tags contain the following fields: "
+                              "- 'conversation_id': The unique identifier for the conversation. "
+                              "- 'user_id': The unique identifier for the user who sent the message. "
+                              "- 'timestamp': The time the message was sent, in ISO 8601 format. "
+                              "- 'role': Indicates whether the sender is the 'user' or 'assistant'. "
+                              "You should use this metadata to interpret the context and intent of the conversation more effectively. "
+                              "Do not include the JSON tags in your responses unless explicitly instructed to do so. "
+                              "Instead, focus on understanding the conversation's continuity and adapting your responses "
+                              "based on the metadata provided."
 ) -> (str, List[Dict[str, str]]):
 
     conversation = [{"role": "system", "content": system_prompt}]
@@ -40,11 +53,16 @@ def initialize_conversation(
         print(f"Error inserting system prompt: {e}")
         return conversation_id, conversation # Returns conversation id and an incomplete prompt
 
-    fetch_messages_query = "SELECT role, content FROM messages WHERE role != 'system' ORDER BY timestamp ASC"
+    fetch_messages_query = "SELECT role, content, conversation_id, user_id, timestamp FROM messages WHERE role != 'system' ORDER BY timestamp ASC"
 
     try:
         previous_messages = execute_query(fetch_messages_query, fetch=True)
-        conversation.extend([{"role": role, "content": content} for role, content in previous_messages])
+        conversation.extend(
+            [
+               add_metadata_tags({"role": role, "content": content}, conversation_id, user_id, timestamp)
+                for role, content, conversation_id, user_id, timestamp in previous_messages
+            ]
+        )
     except Exception as e:
         print(f"Error fetching previous messages: {e}")
         return conversation_id, conversation # Returns conversation id and prompt without message history
@@ -64,27 +82,29 @@ def handle_message(conversation_id: str, conversation: List[Dict], role: str, co
     """
     try:
         # Generate tags for the message, converting them to the approrpaite json type
-        tags = json.dumps(generate_message_tags({0: content})[0]["tags"])
+        content_tags = json.dumps(generate_content_tags({0: content})[0]["tags"])
 
         # Insert the message into the database
         insert_message_query = """
             INSERT INTO messages (conversation_id, role, content, token_count, tags, user_id)
-            VALUES (%s, %s, %s, %s, %s, %s);
+            VALUES (%s, %s, %s, %s, %s, %s)
+            RETUNING timestamp;
         """
-        execute_query(
+        timestamp = execute_query(
             insert_message_query,
             params=(
                 conversation_id,
                 role,
                 content,
                 len(encoding.encode(content)),
-                tags,
+                content_tags,
                 user_id
-            )
-        )
+            ),
+            fetchone = True
+        )[0]
 
         # Append the message to the in-memory conversation log
-        conversation.append({"role": role, "content": content})
+        conversation.append(add_metadata_tags({"role": role, "content": content}, conversation_id, user_id, timestamp))
 
     except Exception as e:
         print(f"Error handling message: {e}")
