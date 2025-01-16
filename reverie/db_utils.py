@@ -54,8 +54,7 @@ def execute_query(query, params=None, fetch=False, fetchone=False):
                 return cursor.fetchone()
             elif fetch:
                 return cursor.fetchall()
-            else:
-                connection.commit()
+            connection.commit()
 
 def close_connection_pool():
     try:
