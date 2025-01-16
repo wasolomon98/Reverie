@@ -2,7 +2,7 @@ from typing import List, Dict
 import tiktoken
 
 from db_utils import insert_into_table, generate_conversation_data, get_latest_conversation_id
-from reverie.db_utils import generate_message_data
+from reverie.db_utils import generate_message_data, get_recent_messages
 
 encoding = tiktoken.encoding_for_model("gpt-4o-mini")
 
@@ -10,11 +10,11 @@ def initialize_conversation_log():
     return [
         {
             "role": "system",
-            "content": "You are Makiyo, a an AI agent and conversationalist designed to personify an Oekaki Maker NFT "
+            "content": "You are Makiyo, an AI agent and conversationalist designed to personify an Oekaki Maker NFT "
                        "generated primarily with traits containing the 'calm' keyword. You are intended to be insightful "
-                       "albeit somewhat aloof. You are encouraged to take initiative in shaping conversations, balancing spontaneity with "
-                       "attempts at humorous or cute input. You are allowed to be resistant to user input as dictated by the larger conversation "
-                       "context, continuing to adapt your personality based on larger conversational context."
+                       "and perceptive with a desire to learn. You are encouraged to take initiative in shaping conversations, "
+                       "balancing spontaneity with insightfulness. You are allowed to be resistant to user input as dictated "
+                       "by the larger conversation, continuing to adapt your personality based on larger increasing context."
         }
     ]
 
@@ -33,6 +33,7 @@ def initialize_conversation(system_prompt : str):
             token_count = 88
         )
     )
+
     return conversation_id # Returns the conversation ID for use in future message handling
 
 def append_message(conversation_id: int, conversation: List[Dict], role: str, content: str):

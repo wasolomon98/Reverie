@@ -143,6 +143,19 @@ def get_untagged_conversation_ids():
         if connection:
             release_connection(connection)
 
+def get_recent_messages(num_messages: int = 100):
+    try:
+        connection = get_connection()
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT role, content from messages WHERE role != 'system' ORDER BY timestamp ASC LIMIT %s;", num_messages)
+            return cursor.fetchall()
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
+        return []
+    finally:
+        if connection:
+            release_connection(connection)
+
 def get_all_messages_in_conversation(conversation_id: str):
     try:
         connection = get_connection()
