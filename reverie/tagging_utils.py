@@ -1,7 +1,7 @@
 # reverie/tagging_utils.py
 
 import json
-from reverie.gpt_utils import gpt_query
+from reverie.gpt_utils import query_gpt
 
 def generate_message_tags(messages: dict):
     """
@@ -19,7 +19,7 @@ def generate_message_tags(messages: dict):
         try:
             # Query GPT directly for tags
             system_prompt = "Provide relevant subject tags for the message as a JSON array."
-            response = gpt_query(
+            response = query_gpt(
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": content}
