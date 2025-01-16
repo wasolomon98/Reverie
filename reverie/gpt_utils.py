@@ -29,8 +29,6 @@ def query_gpt(
             **kwargs
         )
 
-        print(f"{response}")
-
         # Extract and return the assistant’s reply
         return response.choices[0].message.content
     except Exception as e:
