@@ -75,11 +75,11 @@ def handle_message(conversation_id: str, conversation: List[Dict], role: str, co
     """
     try:
         # Generate tags for the message, converting them to the approrpaite json type
-        content_tags = json.dumps(generate_content_tags({0: content})[0]["tags"])
+        sentiment_score = assign_sentiment_score({0: content})[0]
 
         # Insert the message into the database
         insert_message_query = """
-            INSERT INTO messages (conversation_id, role, content, token_count, tags, user_id)
+            INSERT INTO messages (conversation_id, role, content, token_count, sentiment_score, user_id)
             VALUES (%s, %s, %s, %s, %s, %s);
         """
         timestamp = execute_query(
@@ -89,7 +89,7 @@ def handle_message(conversation_id: str, conversation: List[Dict], role: str, co
                 role,
                 content,
                 len(encoding.encode(content)),
-                content_tags,
+                sentiment_score,
                 user_id
             )
         )
