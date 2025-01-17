@@ -76,7 +76,7 @@ def handle_message(conversation_id: str, conversation: List[Dict], role: str, co
     try:
         # Generate tags for the message, converting them to the appropriate json type
         sentiment_score = assign_sentiment_score({0: content})[0]
-        message_tags = generate_content_tags({0: content})[0]
+        message_tags = json.dumps(generate_content_tags({0: content})[0])
 
         # Insert the message into the database
         insert_message_query = """
