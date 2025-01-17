@@ -55,9 +55,9 @@ def initialize_conversation(
         return conversation_id, conversation # Returns conversation id and an incomplete prompt
 
     fetch_messages_query = """
-    SELECT role, content, timestamp 
+    SELECT role, content 
     FROM (
-        SELECT role, content
+        SELECT role, content, timestamp
         FROM messages
         WHERE role != 'system'
         ORDER BY timestamp DESC
