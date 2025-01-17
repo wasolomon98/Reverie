@@ -51,62 +51,70 @@ def assign_sentiment_score(messages: dict):
     return scored_messages
 
 
-def add_metadata_tags(message, conversation_id, user_id, timestamp):
-    """
-    Adds metadata tags to a message in JSON format.
-
-    Args:
-        message (dict): The message content.
-        conversation_id (str): ID of the conversation.
-        user_id (int): ID of the user.
-        timestamp (str): Timestamp of the message.
-
-    Returns:
-        dict: A dictionary containing the message and its metadata tags.
-    """
-    tags = {
-        "conversation_id": conversation_id,
-        "user_id": user_id,
-        "timestamp": timestamp.isoformat()
-    }
-    return {"role": message['role'], "content": f"{json.dumps(tags)} {message['content']}"}
-
 def generate_content_tags(messages: dict):
     """
-    Generates tags for a set of messages and formats them as JSON.
+    Generates predefined tags for a set of messages and formats them as JSON.
 
     Args:
         messages (dict): A dictionary of message IDs and their content.
 
     Returns:
-        dict: A dictionary mapping message IDs to their content and generated tags.
+        dict: A dictionary mapping message IDs to their content and the generated tags.
     """
+    # Predefined list of tags
+    predefined_tags = [
+        "Informational",
+        "Question",
+        "Instructional",
+        "Feedback",
+        "Positive Sentiment",
+        "Negative Sentiment",
+        "Neutral Sentiment",
+        "Greeting",
+        "Farewell",
+        "Clarification",
+        "Agreement",
+        "Disagreement",
+    ]
+
     tagged_messages = {}
+
+    # System prompt to classify messages
+    system_prompt = (
+        "For the given message, identify all applicable tags from the following list: "
+        f"{', '.join(predefined_tags)}. "
+        "Return the matching tags as a JSON array without any additional explanation."
+    )
 
     for message_id, content in messages.items():
         try:
-            # Query GPT directly for tags
-            system_prompt = "Provide relevant subject tags for the message as a JSON array."
+            # Query GPT for tags
             response = query_gpt(
                 conversation_messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": content}
+                    {"role": "user", "content": content},
                 ],
                 temperature=0.3,
-                max_tokens=50
+                max_tokens=100,
             )
-            tags = json.loads(response)  # Parse JSON output from GPT
+
+            # Parse JSON output from GPT
+            tags = json.loads(response)
+
+            # Ensure tags are valid and within the predefined list
+            valid_tags = [tag for tag in tags if tag in predefined_tags]
+
         except json.JSONDecodeError as e:
             print(f"Error parsing tags for message {message_id}: {e}")
-            tags = []  # Fallback to empty tags
+            valid_tags = []  # Fallback to empty tags
         except Exception as e:
             print(f"Error generating tags for message {message_id}: {e}")
-            tags = []  # Fallback to empty tags
+            valid_tags = []  # Fallback to empty tags
 
-        # Store the content and tags in the output
+        # Store the content and valid tags in the output
         tagged_messages[message_id] = {
             "content": content,
-            "tags": tags
+            "tags": valid_tags,
         }
 
     return tagged_messages
