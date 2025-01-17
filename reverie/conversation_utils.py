@@ -4,7 +4,7 @@ from typing import List, Dict
 import tiktoken
 
 from db_utils import execute_query
-from reverie.tagging_utils import add_metadata_tags
+from reverie.tagging_utils import assign_sentiment_score
 from tagging_utils import generate_content_tags
 
 encoding = tiktoken.encoding_for_model("gpt-4o")
