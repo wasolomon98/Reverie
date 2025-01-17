@@ -48,7 +48,7 @@ def initialize_conversation(
         FROM messages
         WHERE role != 'system'
         ORDER BY timestamp DESC
-        LIMIT 40
+        LIMIT 20
     ) AS recent_messages 
     ORDER BY timestamp ASC
     """
