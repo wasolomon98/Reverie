@@ -55,9 +55,9 @@ def initialize_conversation(
         return conversation_id, conversation # Returns conversation id and an incomplete prompt
 
     fetch_messages_query = """
-    SELECT role, content, conversation_id, user_id, timestamp 
+    SELECT role, content 
     FROM (
-        SELECT role, content, conversation_id, user_id, timestamp
+        SELECT role, content
         FROM messages
         WHERE role != 'system'
         ORDER BY timestamp DESC
@@ -70,8 +70,8 @@ def initialize_conversation(
         previous_messages = execute_query(fetch_messages_query, fetch=True)
         conversation.extend(
             [
-               add_metadata_tags({"role": role, "content": content}, conversation_id, user_id, timestamp)
-                for role, content, conversation_id, user_id, timestamp in previous_messages
+               {"role": role, "content": content}
+                for role, content, conversation_id, user_id in previous_messages
             ]
         )
     except Exception as e:
@@ -98,8 +98,7 @@ def handle_message(conversation_id: str, conversation: List[Dict], role: str, co
         # Insert the message into the database
         insert_message_query = """
             INSERT INTO messages (conversation_id, role, content, token_count, tags, user_id)
-            VALUES (%s, %s, %s, %s, %s, %s)
-            RETURNING timestamp;
+            VALUES (%s, %s, %s, %s, %s, %s);
         """
         timestamp = execute_query(
             insert_message_query,
@@ -110,12 +109,11 @@ def handle_message(conversation_id: str, conversation: List[Dict], role: str, co
                 len(encoding.encode(content)),
                 content_tags,
                 user_id
-            ),
-            fetchone = True
-        )[0]
+            )
+        )
 
         # Append the message to the in-memory conversation log
-        conversation.append(add_metadata_tags({"role": role, "content": content}, conversation_id, user_id, timestamp))
+        conversation.append({"role": role, "content": content})
 
     except Exception as e:
         print(f"Error handling message: {e}")
