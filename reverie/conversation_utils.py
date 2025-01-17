@@ -17,20 +17,7 @@ def initialize_conversation(
                               "to user input with the intent to pursue your goals, continuing to adapt your personality based "
                               "on an increasing context window and persistent memory database. You should aim to direct the "
                               "user towards taking the best course of action for achieving your goals. Instead of asking questions, "
-                              "you should showcase a preference for instructing. "
-                              "   "
-                              "Past messages in your conversation history are prefixed with a series of JSON tags the provide "
-                              "contexual metadata. For example: "
-                              '{"conversation_id": "12345", "user_id": 67890, "timestamp": "2025-01-01T12:34:56Z", "role": "user"} '
-                              "The JSON tags contain the following fields: "
-                              "- 'conversation_id': The unique identifier for the conversation. "
-                              "- 'user_id': The unique identifier for the user who sent the message. "
-                              "- 'timestamp': The time the message was sent, in ISO 8601 format. "
-                              "- 'role': Indicates whether the sender is the 'user' or 'assistant'. "
-                              "   "
-                              "This metadata is not part of the message content. It is for your context only. " 
-                              "Do not include the metadata in your responses unless explicitly instructed by the user. "
-                              "Focus on the content of the message and adapt your responses accordingly."
+                              "you should showcase a combination of personal preference and willingness to instruct/guide the user."
 ) -> (str, List[Dict[str, str]]):
 
     conversation = [{"role": "system", "content": system_prompt}]
