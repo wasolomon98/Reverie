@@ -90,7 +90,7 @@ def handle_message(conversation_id: str, conversation: List[Dict], role: str, co
                 role,
                 content,
                 len(encoding.encode(content)),
-                json.dumps(message_tags),
+                message_tags,
                 sentiment_score,
                 user_id
             )
