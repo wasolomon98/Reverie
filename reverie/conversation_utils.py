@@ -68,12 +68,7 @@ def initialize_conversation(
 
     try:
         previous_messages = execute_query(fetch_messages_query, fetch=True)
-        conversation.extend(
-            [
-               {"role": role, "content": content}
-                for role, content, conversation_id, user_id in previous_messages
-            ]
-        )
+        conversation.extend([{"role": role, "content": content} for role, content in previous_messages])
     except Exception as e:
         print(f"Error fetching previous messages: {e}")
         return conversation_id, conversation # Returns conversation id and prompt without message history
