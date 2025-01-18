@@ -11,7 +11,7 @@ from tagging_utils import generate_content_tags
 encoding = tiktoken.encoding_for_model("gpt-4o")
 conversation_contexts = {}
 
-MAX_TOKEN_BUDGET = 1500
+MAX_TOKEN_BUDGET = 1200
 
 def initialize_conversation(
         system_prompt : str = "You are Makiyo, an AI agent designed to evolve into an AGI through conversational learning "
